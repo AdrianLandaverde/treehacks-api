@@ -2,5 +2,5 @@ fastapi
 uvicorn
 gunicorn
 requests
-chromadb==0.4.4
+chromadb==0.4.3
 openai
