@@ -4,7 +4,6 @@ from fastapi.responses import FileResponse
 import requests
 import os
 
-os.environ['GOOGLE_API_KEY'] = "AIzaSyC05F4Ld4Crlfos7Q4eRRFmMgLZ2m4Kq1w"
 api_key= os.getenv('GOOGLE_API_KEY')
 print(api_key)
 
