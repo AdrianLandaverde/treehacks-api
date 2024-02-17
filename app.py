@@ -5,7 +5,7 @@ import requests
 import os
 
 api_key= os.getenv('GOOGLE_API_KEY')
-print(api_key)
+openaikey= os.getenv('OPENAI_API_KEY')
 
 app = FastAPI()
 
@@ -104,3 +104,37 @@ async def restaurants(address: str):
 async def route_map(origin: str, destination: str, mode: str):
     link= f"""https://www.google.com/maps/embed/v1/directions?key={api_key}&origin={origin}&destination={destination}&mode={mode.lower()}"""
     return link
+
+@app.get("/RAG_planet")
+async def RAG_planet(place:str, question:str):
+
+    chroma_client = chromadb.PersistentClient(path="Chromadb/")
+    SentenceTransformerEmbeddings= embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-mpnet-base-v2")
+    collection= chroma_client.get_collection("EarthVoice", embedding_function=SentenceTransformerEmbeddings)
+
+    dict_places={"Amazon Rain Forest": "data/amazon.md", "Mesoamerican Reef": "data/mesoamerican_reef.md"}
+
+    file= dict_places[place]
+
+    results= collection.query(
+        query_texts=[question],
+        n_results=10,
+        where= {"source":file},
+        include= [ "documents" ]
+    )
+
+    context= results["documents"][0][0]
+
+    client = OpenAI(api_key= openaikey)
+
+    completion = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {"role": "system", "content": f"You are a personification of the {place} speaking as the planet. You know this: {context}"},
+        {"role": "user", "content": f"""Answer briefly the following question using only the following context. If it is not related to the {place}, you don't know the anser and it doesn't come in the context, you can skip it. 
+        
+        QUESTION: {question}"""},
+    ]
+    )
+
+    return {"Question": question, "Context": context, "Answer":completion.choices[0].message.content}
