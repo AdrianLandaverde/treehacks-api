@@ -59,7 +59,7 @@ async def restaurants(address: str):
 
     url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
     params = {
-        'keyword': 'sustainable veggie',
+        'keyword': 'sustainable veggie plant-based',
         'location': f"{lat},{lon}",
         'radius': 1500,
         'type': 'restaurant',
@@ -89,4 +89,18 @@ async def restaurants(address: str):
     for i in range(len(data["results"])):
         results.append(data["results"][i]["name"] + " " + data["results"][i]["vicinity"])
 
-    return {'names': results, 'main_map': main_map}
+    base_link= f"https://maps.googleapis.com/maps/api/staticmap?center={lat},{lon}&zoom=13&size=600x400"
+    markers=""
+    for i in range(min([len(data["results"]), 9])):
+        temp_lat=data["results"][i]["geometry"]["location"]["lat"]
+        temp_lon=data["results"][i]["geometry"]["location"]["lng"]
+        marker= f"&markers=color:red%7Clabel:{i+1}%7C{temp_lat},{temp_lon}"
+        markers+= marker
+    link= base_link+markers+"&key="+api_key
+
+    return {'names': results, 'main_map': main_map, 'static_map': link}
+
+@app.get("/route_map")
+async def route_map(origin: str, destination: str, mode: str):
+    link= f"""https://www.google.com/maps/embed/v1/directions?key={api_key}&origin={origin}&destination={destination}&mode={mode.lower()}"""
+    return link
