@@ -3,6 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 import requests
 import os
+import chromadb
+from chromadb.utils import embedding_functions
+from openai import OpenAI
 
 api_key= os.getenv('GOOGLE_API_KEY')
 openaikey= os.getenv('OPENAI_API_KEY')
