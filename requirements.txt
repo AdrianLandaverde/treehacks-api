@@ -5,3 +5,4 @@ requests
 chromadb
 openai
 pysqlite3-binary 
+sentence-transformers
