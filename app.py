@@ -114,7 +114,7 @@ async def restaurants(address: str):
 @app.get("/route_map")
 async def route_map(origin: str, destination: str, mode: str):
     link= f"""https://www.google.com/maps/embed/v1/directions?key={api_key}&origin={origin}&destination={destination}&mode={mode.lower()}"""
-    return link
+    return {"link":link}
 
 @app.get("/RAG_planet")
 async def RAG_planet(place:str, question:str):
