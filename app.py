@@ -113,6 +113,7 @@ async def route_map(origin: str, destination: str, mode: str):
     link= f"""https://www.google.com/maps/embed/v1/directions?key={api_key}&origin={origin}&destination={destination}&mode={mode.lower()}"""
     return {"link":link}
 
+@app.get("/label_info")
 def get_label_info(image_path):
     #pytesseract.tesseract_cmd = r"Tesseract-OCR\tesseract.exe"
     # Open the image file
