@@ -146,4 +146,4 @@ def get_label_info(image_path:str):
     )
 
     # Return the text
-    return completion.choices[0].message.content
+    return {"answer",completion.choices[0].message.content}
