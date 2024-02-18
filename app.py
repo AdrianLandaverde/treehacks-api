@@ -114,7 +114,7 @@ async def route_map(origin: str, destination: str, mode: str):
     return {"link":link}
 
 @app.get("/label_info")
-def get_label_info(image_path):
+def get_label_info(image_path:str):
     #pytesseract.tesseract_cmd = r"Tesseract-OCR\tesseract.exe"
     # Open the image file
     img = Image.open(image_path)
