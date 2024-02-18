@@ -3,12 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 import requests
 import os
-import pysqlite3
-import sys
-sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
-import chromadb
-from chromadb.utils import embedding_functions
 from openai import OpenAI
+from PIL import Image 
+from pytesseract import pytesseract
 
 api_key= os.getenv('GOOGLE_API_KEY')
 openaikey= os.getenv('OPENAI_API_KEY')
@@ -116,36 +113,29 @@ async def route_map(origin: str, destination: str, mode: str):
     link= f"""https://www.google.com/maps/embed/v1/directions?key={api_key}&origin={origin}&destination={destination}&mode={mode.lower()}"""
     return {"link":link}
 
-@app.get("/RAG_planet")
-async def RAG_planet(place:str, question:str):
+def get_label_info(image_path):
+    #pytesseract.tesseract_cmd = r"Tesseract-OCR\tesseract.exe"
+    # Open the image file
+    img = Image.open(image_path)
 
-    chroma_client = chromadb.PersistentClient(path="Chromadb/")
-    SentenceTransformerEmbeddings= embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-mpnet-base-v2")
-    collection= chroma_client.get_collection("EarthVoice", embedding_function=SentenceTransformerEmbeddings)
-
-    dict_places={"Amazon Rain Forest": "data/amazon.md", "Mesoamerican Reef": "data/mesoamerican_reef.md"}
-
-    file= dict_places[place]
-
-    results= collection.query(
-        query_texts=[question],
-        n_results=10,
-        where= {"source":file},
-        include= [ "documents" ]
-    )
-
-    context= results["documents"][0][0]
+    # Use pytesseract to do OCR on the image
+    text = pytesseract.image_to_string(img)
 
     client = OpenAI(api_key= openaikey)
 
     completion = client.chat.completions.create(
     model="gpt-3.5-turbo",
     messages=[
-        {"role": "system", "content": f"You are a personification of the {place} speaking as the planet. You know this: {context}"},
-        {"role": "user", "content": f"""Answer briefly the following question using only the following context. If it is not related to the {place}, you don't know the anser and it doesn't come in the context, you can skip it. 
+        {"role": "system", "content": """You are an expert in sustainable fashion. You know this about materials: 
+            - High carbon efficiency: Linen, Hemp
+            - Mid-level carbon efficiency: Carbon, Wool, Denim, Silk
+            - Low carbon efficiency: Polyester, Rayon, Nylon 
+        """},
+        {"role": "user", "content": f"""Classify into one of this categories (High carbon efficiency, Mid-level carbon efficiency, Low carbon efficiency) the following label of the cloth. Based on the percentages and classification, give a rating from 1 (low efficiency) to 10 (high efficiency).   
         
-        QUESTION: {question}"""},
+        LABEL: {text}"""},
     ]
     )
 
-    return {"Question": question, "Context": context, "Answer":completion.choices[0].message.content}
+    # Return the text
+    return completion.choices[0].message.content
