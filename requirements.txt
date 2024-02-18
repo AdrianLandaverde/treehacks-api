@@ -2,7 +2,5 @@ fastapi
 uvicorn
 gunicorn
 requests
-chromadb
 openai
-pysqlite3-binary 
-sentence-transformers
+pytesseract
