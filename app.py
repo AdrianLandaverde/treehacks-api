@@ -6,6 +6,7 @@ import os
 from openai import OpenAI
 from PIL import Image 
 from pytesseract import pytesseract
+import easyocr
 from io import BytesIO
 
 api_key= os.getenv('GOOGLE_API_KEY')
@@ -116,16 +117,20 @@ async def route_map(origin: str, destination: str, mode: str):
 
 @app.get("/label_info")
 def get_label_info(image_path:str):
-    #pytesseract.tesseract_cmd = r"Tesseract-OCR\tesseract.exe"
+    #pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
     # Open the image file
+    # img = Image.open(image_path)
+
+    # # Use pytesseract to do OCR on the image
+    # text = pytesseract.image_to_string(img)
+
     response = requests.get(image_path)
-    image = response.content
-    img = Image.open(BytesIO(image))
+    if response.status_code == 200:
+        image = Image.open(BytesIO(response.content))
+    reader = easyocr.Reader(["en"])
+    text = reader.readtext(image)
 
-    # Use pytesseract to do OCR on the image
-    text = pytesseract.image_to_string(img)
-
-    client = OpenAI(api_key= openaikey)
+    client = OpenAI(api_key= get_open_ai_api())
 
     completion = client.chat.completions.create(
     model="gpt-3.5-turbo",
