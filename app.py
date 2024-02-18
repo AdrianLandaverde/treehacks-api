@@ -104,6 +104,11 @@ async def restaurants(address: str):
         markers+= marker
     link= base_link+markers+"&key="+api_key
 
+    results= []
+
+    for i in range(len(data["results"])):
+        results.append({"name":data["results"][i]["name"], "direction":data["results"][i]["vicinity"]})
+
     return {'names': results, 'main_map': main_map, 'static_map': link}
 
 @app.get("/route_map")
