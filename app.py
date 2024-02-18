@@ -6,6 +6,7 @@ import os
 from openai import OpenAI
 from PIL import Image 
 from pytesseract import pytesseract
+from io import BytesIO
 
 api_key= os.getenv('GOOGLE_API_KEY')
 openaikey= os.getenv('OPENAI_API_KEY')
