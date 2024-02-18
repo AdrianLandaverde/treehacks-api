@@ -117,18 +117,18 @@ async def route_map(origin: str, destination: str, mode: str):
 
 @app.get("/label_info")
 def get_label_info(image_path:str):
-    #pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-    # Open the image file
-    # img = Image.open(image_path)
-
-    # # Use pytesseract to do OCR on the image
-    # text = pytesseract.image_to_string(img)
-
-    response = requests.get(image_path)
-    if response.status_code == 200:
-        image = Image.open(BytesIO(response.content))
-    reader = easyocr.Reader(["en"])
-    text = reader.readtext(image)
+    text= """40% VISCOSE
+        33% NYLON
+        25% POLYESTER
+        2% CASHMERE /CACHEMIRE
+        MAND WASH ‘COLD, WITH
+        LIKE COLORS ONLY NON-
+        CHLORINE BLEACH IF
+        NEEDED ROLL IN TOWEL TO
+        REMOVE EXCE
+        MOISTURE, RES
+        
+        FLATTO."""
 
     client = OpenAI(api_key= get_open_ai_api())
 
