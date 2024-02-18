@@ -6,7 +6,6 @@ import os
 from openai import OpenAI
 from PIL import Image 
 from pytesseract import pytesseract
-import easyocr
 from io import BytesIO
 
 api_key= os.getenv('GOOGLE_API_KEY')
