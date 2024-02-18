@@ -117,7 +117,9 @@ async def route_map(origin: str, destination: str, mode: str):
 def get_label_info(image_path:str):
     #pytesseract.tesseract_cmd = r"Tesseract-OCR\tesseract.exe"
     # Open the image file
-    img = Image.open(image_path)
+    response = requests.get(image_path)
+    image = response.content
+    img = Image.open(BytesIO(image))
 
     # Use pytesseract to do OCR on the image
     text = pytesseract.image_to_string(img)
