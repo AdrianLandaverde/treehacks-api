@@ -129,7 +129,7 @@ def get_label_info(image_path:str):
         
         FLATTO."""
 
-    client = OpenAI(api_key= get_open_ai_api())
+    client = OpenAI(api_key= openaikey)
 
     completion = client.chat.completions.create(
     model="gpt-3.5-turbo",
